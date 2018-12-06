@@ -9,10 +9,12 @@
  * @requires jQuery v1.8.0+
  * @preserve
  */
+
 (function($) {
 
     'use strict';
 
+    var debounce = require('lodash.debounce');
     // Define the jscroll namespace and default settings
     $.jscroll = {
         defaults: {
@@ -22,6 +24,8 @@
             loadingHtml: '<small>Loading...</small>',
             loadingFunction: false,
             padding: 0,
+            debounce: 1500,
+            debounceOptions: { leading: true, maxWait: 5000 },
             nextSelector: 'a:last',
             contentSelector: '',
             pagingSelector: '',
@@ -143,7 +147,7 @@
             },
 
             // Load the next set of content, if available
-            _load = function() {
+            _load = debounce(function() {
                 var $inner = $e.find('div.jscroll-inner').first(),
                     data = $e.data('jscroll');
 
@@ -175,7 +179,7 @@
                         _debug('dir', data);
                     });
                 });
-            },
+            }, _options.debounce, _options.debounceOptions),
 
             // Safe console debug - http://klauzinski.com/javascript/safe-firebug-console-in-javascript
             _debug = function(m) {
